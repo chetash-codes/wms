@@ -1,0 +1,52 @@
+.hub-header {
+  margin-bottom: 24px;
+}
+
+.hub-header h2 {
+  margin: 0 0 4px 0;
+  color: #232832;
+  font-weight: 600;
+}
+
+.split-layout-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.form-column {
+  flex: 1;
+  max-width: 400px;
+}
+
+.table-column {
+  flex: 2;
+}
+
+mat-card {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+mat-card-header {
+  margin-bottom: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.hub-table {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+th.mat-mdc-header-cell {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}

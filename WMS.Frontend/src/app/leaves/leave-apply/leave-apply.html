@@ -1,0 +1,61 @@
+<app-navigation-shell>
+  <div class="leave-header">
+    <h2>Leave Management Hub</h2>
+    <p>Submit dynamic time-off allocations and trace approval tracking matrices.</p>
+  </div>
+
+  <mat-tab-group animationDuration="200ms">
+    <mat-tab label="Apply for Leave">
+      <div class="tab-content-wrapper">
+        <mat-card class="form-card mat-elevation-z1">
+          <form [formGroup]="leaveForm" (ngSubmit)="onSubmit()">
+            <mat-card-content>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Leave Classification Type</mat-label>
+                <mat-select formControlName="leaveType">
+                  <mat-option value="Sick">Sick Leave</mat-option>
+                  <mat-option value="Casual">Casual Leave</mat-option>
+                  <mat-option value="Earned">Earned Leave</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <div class="date-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Start Date</mat-label>
+                  <input matInput [matDatepicker]="startPicker" formControlName="fromDate">
+                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>End Date</mat-label>
+                  <input matInput [matDatepicker]="endPicker" formControlName="toDate">
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Reason for Leave Request</mat-label>
+                <textarea matInput formControlName="reason" rows="4" placeholder="Brief statement regarding leave duration details..."></textarea>
+              </mat-form-field>
+
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-raised-button color="primary" type="submit" class="submit-btn" [disabled]="leaveForm.invalid">
+                <mat-icon>send</mat-icon> SUBMIT APPLICATION
+              </button>
+            </mat-card-actions>
+          </form>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Manager Review Board" *ngIf="isManagerOrAdmin">
+      <div class="tab-content-wrapper">
+        <app-leave-management></app-leave-management>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</app-navigation-shell>

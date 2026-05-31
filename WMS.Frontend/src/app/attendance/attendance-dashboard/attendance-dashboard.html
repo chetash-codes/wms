@@ -1,0 +1,51 @@
+<app-navigation-shell>
+  <div class="attendance-header">
+    <h2>Time & Attendance Tracker</h2>
+    <p>Log your daily working hours and manage active operation modes.</p>
+  </div>
+
+  <mat-tab-group animationDuration="200ms">
+    <mat-tab label="Daily Time Clock">
+      <div class="dashboard-grid">
+        <mat-card class="clock-card mat-elevation-z3">
+          <mat-card-content>
+            <div class="clock-display">
+              <mat-icon class="clock-icon">watch_later</mat-icon>
+              <h1 class="live-time">{{ currentTime | date:'mediumTime' }}</h1>
+              <p class="live-date">{{ currentTime | date:'fullDate' }}</p>
+            </div>
+            <div class="status-indicator" [ngClass]="isCheckedIn ? 'active' : 'inactive'">
+              Current Status: <strong>{{ isCheckedIn ? 'CHECKED IN' : 'CHECKED OUT' }}</strong>
+            </div>
+            <hr class="divider" />
+            <div class="control-actions" *ngIf="!isCheckedIn">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Select Work Mode</mat-label>
+                <mat-select [(ngModel)]="selectedWorkMode">
+                  <mat-option value="WFO">Work From Office (WFO)</mat-option>
+                  <mat-option value="WFH">Work From Home (WFH)</mat-option>
+                  <mat-option value="Hybrid">Hybrid Schedule</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button mat-raised-button color="primary" class="action-btn checkin-btn" (click)="onCheckIn()">
+                <mat-icon>login</mat-icon> EXECUTE CHECK-IN
+              </button>
+            </div>
+            <div class="control-actions" *ngIf="isCheckedIn">
+              <div class="locked-mode">Mode Locked: <strong>{{ selectedWorkMode }}</strong></div>
+              <button mat-raised-button color="warn" class="action-btn checkout-btn" (click)="onCheckOut()">
+                <mat-icon>logout</mat-icon> EXECUTE CHECK-OUT
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Attendance History Logs">
+      <div style="padding-top: 20px;">
+        <app-attendance-history></app-attendance-history>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</app-navigation-shell>

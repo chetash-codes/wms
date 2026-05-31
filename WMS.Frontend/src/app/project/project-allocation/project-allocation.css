@@ -1,0 +1,76 @@
+.allocation-header {
+  margin-bottom: 24px;
+}
+
+.allocation-header h2 {
+  margin: 0 0 4px 0;
+  color: #232832;
+  font-weight: 600;
+}
+
+.allocation-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Matches the responsive structural layout grid of the Department Hub */
+.split-dashboard-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* Form Column A: Create Project Card Container */
+.dashboard-column:first-child {
+  flex: 1;
+  max-width: 400px; /* Constrains form width identically to Department Creation */
+}
+
+/* Form Column B: Allocate Employee Card Container */
+.dashboard-column:last-child {
+  flex: 1;
+  max-width: 450px;
+}
+
+/* Material Structural Cards Overrides */
+mat-card {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+mat-card-header {
+  margin-bottom: 20px;
+}
+
+mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #232832;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Unified Action Buttons System (Removes oversized padding, fixes standard text tracking) */
+mat-card-actions {
+  padding: 0 16px 8px 16px;
+}
+
+.action-btn, .allocate-btn {
+  width: 100%;
+  padding: 8px 0; /* Standardized height action button alignment */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Ensure select dropdown arrow boxes match standard field heights */
+th.mat-mdc-header-cell {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}

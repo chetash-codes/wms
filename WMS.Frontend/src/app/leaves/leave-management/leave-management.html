@@ -1,0 +1,49 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z1 approval-table">
+
+  <ng-container matColumnDef="leaveId">
+    <th mat-header-cell *matHeaderCellDef> ID </th>
+    <td mat-cell *matCellDef="let element"> #{{element.leaveId}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="leaveType">
+    <th mat-header-cell *matHeaderCellDef> Leave Type </th>
+    <td mat-cell *matCellDef="let element"> <strong>{{element.leaveType}} Leave</strong> </td>
+  </ng-container>
+
+  <ng-container matColumnDef="duration">
+    <th mat-header-cell *matHeaderCellDef> Requested Timeline </th>
+    <td mat-cell *matCellDef="let element"> {{element.fromDate | date:'shortDate'}} to {{element.toDate | date:'shortDate'}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="reason">
+    <th mat-header-cell *matHeaderCellDef> Reason </th>
+    <td mat-cell *matCellDef="let element"> {{element.reason || 'No statement provided.'}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let element">
+      <span class="status-pill" [ngClass]="element.status.toLowerCase()">
+        {{element.status}}
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef> Action Controls </th>
+    <td mat-cell *matCellDef="let element">
+      <div class="action-cell-buttons" *ngIf="element.status === 'Pending'">
+        <button mat-mini-fab color="primary" class="approve-btn" (click)="onAction(element.leaveId, 'Approved')" title="Approve Request">
+          <mat-icon>check</mat-icon>
+        </button>
+        <button mat-mini-fab color="warn" (click)="onAction(element.leaveId, 'Rejected')" title="Reject Request">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <span *ngIf="element.status !== 'Pending'" class="processed-text">Locked</span>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

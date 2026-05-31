@@ -1,0 +1,134 @@
+.welcome-banner {
+  margin-bottom: 28px;
+}
+
+.welcome-banner h2 {
+  margin: 0 0 4px 0;
+  color: #1a1e24;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.welcome-banner p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.kpi-grid-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  flex: 1;
+  min-width: 280px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 5px solid #3f51b5;
+}
+
+.kpi-card.total-projects-card {
+  border-left-color: #1976d2;
+}
+
+.kpi-card.attendance-rate-card {
+  border-left-color: #2e7d32;
+}
+
+.kpi-card.pending-leaves-card {
+  border-left-color: #f57c00;
+}
+
+.kpi-card.alert-highlight {
+  background-color: #fffde7;
+}
+
+.kpi-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon-frame {
+  background-color: #f0f2f5;
+  padding: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-frame mat-icon {
+  font-size: 28px;
+  height: 28px;
+  width: 28px;
+  color: #555;
+}
+
+.total-staff-card .icon-frame mat-icon { color: #3f51b5; }
+.total-projects-card .icon-frame mat-icon { color: #1976d2; }
+.attendance-rate-card .icon-frame mat-icon { color: #2e7d32; }
+.pending-leaves-card .icon-frame mat-icon { color: #f57c00; }
+
+.text-frame h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #777;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.text-frame h1 {
+  margin: 0 0 2px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.text-frame p {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.distribution-section-row {
+  width: 100%;
+}
+
+.distribution-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.split-bar-wrapper {
+  display: flex;
+  gap: 40px;
+  margin-top: 15px;
+}
+
+.split-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+}
+
+.split-metric .label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+}
+
+.split-metric mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  color: #777;
+}
