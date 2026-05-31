@@ -104,7 +104,7 @@ stages:
           - task: AzureRmWebAppDeployment@4
             displayName: 'Deploy Web API to Azure App Service'
             inputs:
-              azureSubscription: 'Your-Azure-Service-Connection'
+              azureSubscription: 'WMS-Azure-Cloud-Link'
               WebAppName: 'wms-production-api-app'
               package: '$(System.ArtifactsDirectory)/backend-drop/*.zip'
 
