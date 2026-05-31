@@ -1,0 +1,119 @@
+trigger:
+  - main
+  - dev
+
+variables:
+  netCoreSolution: 'WMS-Solution.sln'
+  backendProject: 'WMS.API/WMS.API.csproj'
+  buildConfiguration: 'Release'
+
+stages:
+- stage: Continuous_Integration
+  displayName: 'CI Stage: Build and Test'
+  jobs:
+  - job: Compile_Workspace
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    # 1. Restore & Compile Backend Core Layers
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore NuGet Packages'
+      inputs:
+        command: 'restore'
+        projects: '$(netCoreSolution)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Compile Backend Solution'
+      inputs:
+        command: 'build'
+        projects: '$(netCoreSolution)'
+        arguments: '--configuration $(buildConfiguration)'
+
+    # 2. Run Automation Unit Verification Blocks
+    - task: DotNetCoreCLI@2
+      displayName: 'Execute xUnit Automation Tests'
+      inputs:
+        command: 'test'
+        projects: 'WMS.Tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+
+    # 3. Publish Zip Packages for Azure App Service App Hosting
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish API Web App Package'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '$(backendProject)'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/api'
+        zipAfterPublish: true
+
+    # 4. Initialize Node Tooling & Compile Web Asset Artifact Distribution Folders
+    - task: NodeTool@0
+      displayName: 'Install Node Runtime Engine'
+      inputs:
+        versionSpec: '20.x'
+
+    - script: |
+        cd WMS.Frontend
+        npm install
+        npm run build --configuration=production
+      displayName: 'Compile Production Angular Client Web SPA'
+
+    # 5. Push Build Artifact Drops to Target Access Drop Pools
+    - task: PublishBuildArtifacts@1
+      displayName: 'Upload Compiled Backend Drops'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/api'
+        ArtifactName: 'backend-drop'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Upload Compiled Frontend Static Drops'
+      inputs:
+        PathtoPublish: 'WMS.Frontend/dist'
+        ArtifactName: 'frontend-drop'
+
+- stage: Continuous_Deployment
+  displayName: 'CD Stage: Deploy to Production Cloud'
+  dependsOn: Continuous_Integration
+  condition: succeeded('Continuous_Integration')
+  jobs:
+  - deployment: Deploy_WMS_Cloud
+    pool:
+      vmImage: 'windows-latest'
+    environment: 'Production' # Triggers Release pipeline checkpoint validations
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # 1. Fetch Application Artifact Packages
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'backend-drop'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'frontend-drop'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          # 2. Push Backend Executables straight to your Azure Web App Layer
+          - task: AzureRmWebAppDeployment@4
+            displayName: 'Deploy Web API to Azure App Service'
+            inputs:
+              azureSubscription: 'Your-Azure-Service-Connection'
+              WebAppName: 'wms-production-api-app'
+              package: '$(System.ArtifactsDirectory)/backend-drop/*.zip'
+
+          # 3. Deploy Frontend static distribution files directly to Azure Static Web Apps
+          - task: AzureStaticWebApp@0
+            displayName: 'Deploy Front-End Client Web SPA'
+            inputs:
+              app_location: '$(System.ArtifactsDirectory)/frontend-drop'
+              skip_app_build: true
+              verbose: true
+            env:
+              AZURE_STATIC_WEB_APPS_API_TOKEN: $(STATIC_WEB_APP_TOKEN_VARIABLE)
