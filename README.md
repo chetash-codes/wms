@@ -38,20 +38,35 @@ The solution folder structure follows a decoupled architecture pattern:
 ---
 
 ## 4. Local Quick Start Guide
-### Step 1: Database Initialization (Code-First)
-Open your terminal and navigate to the Infrastructure layer directory.Ensure your connection string inside WMS.API/appsettings.json points to your target local SQL Server instance.Apply the migrations to seed your database schemas:  
+### Step 1: Database Environment Configuration
+This application utilizes environment variables to decouple configuration from source code.  
+Before running the API backend, configure your target SQL Server instance using your terminal environment variables:
 
+**Windows (PowerShell):**
+```bash
+$env:ConnectionStrings__DefaultConnection="Server=(localdb)\mssqllocaldb;Database=WmsCapstoneDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+```
+**Linux / macOS:**
 ```Bash
-dotnet ef database update --project ../WMS.Infrastructure --startup-project ../WMS.API
+export ConnectionStrings__DefaultConnection="Server=(localdb)\mssqllocaldb;Database=WmsCapstoneDb;Trusted_Connection=True;MultipleActiveResultSets=true"
 ```
 
-### Step 2: Boot Up the .NET Core API Backend
-Navigate to the API project entry rim folder:
+### Step 2: Database Initialization (Code-First)
+1. Open your terminal in the root directory WMS-Solution.
+
+2. Apply the migrations to seed your database schemas:  
+
+```Bash
+dotnet ef database update --project WMS.Infrastructure --startup-project WMS.API
+```
+
+### Step 3: Boot Up the .NET Core API Backend
+1. Navigate to the API project entry rim folder:
 
 ```Bash
 cd WMS.API
 ```
-Restore package dependencies and spin up the development engine server:  
+2. Restore package dependencies and spin up the development engine server:  
 
 ```Bash
 dotnet restore
@@ -59,13 +74,20 @@ dotnet run
 ```
 The server application will expose its endpoints dynamically via Swagger at https://localhost:7174/swagger.
 
-### Step 3: Boot Up the Angular UI Frontend Client
-Navigate to your frontend workspace directory:
+### Step 4: Boot Up the Angular UI Frontend Client
+1. Navigate to your frontend workspace directory:
 
 ```Bash
 cd ../WMS.Frontend
 ```
-Install the necessary node modules and spin up the local development host server:
+2. Verify your target API URL mappings inside src/environments/environment.ts:
+```TypeScript
+export const environment = {
+  production: false,
+  apiUrl: 'https://localhost:7174/api' // Adjust if your local .NET API runs on a different port
+};
+```
+3. Install the necessary node modules and spin up the local development host server:
 
 ```Bash
 npm install
@@ -76,6 +98,31 @@ Access your secure application canvas inside your browser environment at http://
 ---
 
 ## 5. Default Credentials & Seeding
-The database contains seeded evaluation role clearances (Admin, Manager, Employee).
-* **Username**: admin@wms.com
-* **Password**: Welcome@123
+The database contains seeded evaluation role clearances (Admin, Manager, Employee).  
+You can log in using the following standard credentials:
+1. * **Username**: admin@wms.com
+   * **Password**: WelcomeAdmin@123<br><br>
+2. * **Username**: manager@wms.com
+   * **Password**: WelcomeManager@123<br><br>
+3. * **Username**: employee@wms.com
+   * **Password**: WelcomeEmployee@123
+
+---
+
+## 6. Verification Testing Workflow
+
+To ensure all decoupled systems are working in unison, run through this end-to-end integration checklist:
+
+1. **System Entry**: Access the portal using the default Admin credentials. You will land directly on the Executive Summary Dashboard displaying live headcount and active operational statistics.
+
+2. **Add Employee (Transactional Check)**: Navigate to the Employee Roster tab, click ADD NEW EMPLOYEE, populate the form, and save. Verify the clean "Employee profile created successfully." toast snackbar appears.
+
+3. **Automatic Login Provisioning Verification**: Check your local database UserLogins table. A matching entry with the new employee's email address as the username and Welcome@123 as the default hashed password has been successfully written inside an isolated SQL transaction.
+
+4. **Edit Verification**: Click the Edit icon next to any employee profile. Verify that the form loads inside a dialog container pre-populated with existing database metrics. Modify the status or contact information and save.
+
+5. **Project Allocation Verification**: Navigate to Project Management Hub. Under the Create New Project tab, launch a project (e.g., WMS Integration Phase 2). Under Assign Staff Member, select your newly created employee and assign them to the new project.
+
+6. **Attendance Logging**: Log out and log back in as the new employee. Navigate to the Attendance tab. Select your work mode (WFO/WFH) and click EXECUTE CHECK-IN. Let some seconds pass, click EXECUTE CHECK-OUT, then head over to the Attendance History Logs tab to view the calculated duration row.
+
+7. **Leaves Flow**: From the employee profile, submit a Casual Leave request. Log back in as a Manager, navigate to Leave Management Hub, open the Manager Review Board, and click Approve. Log back in as the employee to verify that the status has updated instantly to green.
