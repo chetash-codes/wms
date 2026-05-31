@@ -3,7 +3,7 @@ trigger:
   - dev
 
 variables:
-  netCoreSolution: 'WMS-Solution.sln'
+  netCoreSolution: 'WMS-Solution.slnx'
   backendProject: 'WMS.API/WMS.API.csproj'
   buildConfiguration: 'Release'
 
