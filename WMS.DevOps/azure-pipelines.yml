@@ -90,7 +90,7 @@ stages:
   jobs:
   - deployment: Deploy_WMS_Cloud
     pool:
-      vmImage: 'windows-latest'
+      vmImage: 'ubuntu-latest'
     environment: 'Production' # Triggers Release pipeline checkpoint validations
     strategy:
       runOnce:
