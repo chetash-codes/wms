@@ -70,6 +70,14 @@ stages:
         workingDir: 'WMS.Frontend'
         customCommand: 'run build -- --configuration=production --output-path=dist'
 
+    # 7. Flatten and Copy Built Files directly to the Staging Directory
+    - task: CopyFiles@2
+      displayName: 'DevOps: Flatten and Stage Compiled Assets'
+      inputs:
+        SourceFolder: 'WMS.Frontend/dist/browser'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/frontend-static'
+
     # 7. Push Build Artifact Drops to Target Access Drop Pools
     - task: PublishBuildArtifacts@1
       displayName: 'Upload Compiled Backend Drops'
@@ -80,7 +88,7 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Upload Compiled Frontend Static Drops'
       inputs:
-        PathtoPublish: 'WMS.Frontend/dist'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/frontend-static'
         ArtifactName: 'frontend-drop'
 
 - stage: Continuous_Deployment
