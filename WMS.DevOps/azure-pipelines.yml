@@ -47,19 +47,30 @@ stages:
         arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/api'
         zipAfterPublish: true
 
-    # 4. Initialize Node Tooling & Compile Web Asset Artifact Distribution Folders
+    # 4. Initialize Node Tooling Environment
     - task: NodeTool@0
       displayName: 'Install Node Runtime Engine'
       inputs:
         versionSpec: '20.x'
 
-    - script: |
-        cd WMS.Frontend
-        npm ci --legacy-peer-deps
-        npx ng build --configuration=production --output-path=dist
-      displayName: 'Compile Production Angular Client Web SPA'
+    # 5. Clean Install Dependencies Using Dedicated NPM Task
+    - task: Npm@1
+      displayName: 'NPM: Clean Install Dependencies'
+      inputs:
+        command: 'custom'
+        workingDir: 'WMS.Frontend'
+        customCommand: 'ci --legacy-peer-deps'
 
-    # 5. Push Build Artifact Drops to Target Access Drop Pools
+    # 6. Compile Production Assets Using Dedicated NPM Task
+    # This guarantees the agent waits for compilation and throws a clear error if it fails
+    - task: Npm@1
+      displayName: 'NPM: Compile Production Angular Client'
+      inputs:
+        command: 'custom'
+        workingDir: 'WMS.Frontend'
+        customCommand: 'run build -- --configuration=production --output-path=dist'
+
+    # 7. Push Build Artifact Drops to Target Access Drop Pools
     - task: PublishBuildArtifacts@1
       displayName: 'Upload Compiled Backend Drops'
       inputs:
