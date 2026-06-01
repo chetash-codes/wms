@@ -125,7 +125,7 @@ stages:
           - task: AzureStaticWebApp@0
             displayName: 'Deploy Front-End Client Web SPA'
             inputs:
-              app_location: '$(System.ArtifactsDirectory)/frontend-drop/frontend-drop/browser'
+              app_location: '$(System.ArtifactsDirectory)/frontend-drop/frontend-drop'
               skip_app_build: true
               verbose: true
             env:
