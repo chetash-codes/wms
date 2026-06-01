@@ -93,7 +93,7 @@ stages:
       vmImage: 'ubuntu-latest'
     environment: 'Production' # Triggers Release pipeline checkpoint validations
     variables:
-    - group: `wms-release-secrets`
+    - group: 'wms-release-secrets'
     strategy:
       runOnce:
         deploy:
