@@ -58,6 +58,11 @@ stages:
         npm install
         npm run build --configuration=production
       displayName: 'Compile Production Angular Client Web SPA'
+    
+    - powershell: |
+        Write-Host "=== PRINTING ACTIVE FRONTEND DIRECTORY STRUCTURE ==="
+        Get-ChildItem -Path "WMS.Frontend" -Recurse -Filter "index.html" | Select-Object FullName
+      displayName: 'Debug: Locate index.html Path'
 
     # 5. Push Build Artifact Drops to Target Access Drop Pools
     - task: PublishBuildArtifacts@1
