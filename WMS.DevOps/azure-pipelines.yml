@@ -80,7 +80,7 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Upload Compiled Frontend Static Drops'
       inputs:
-        PathtoPublish: 'WMS.Frontend/dist/browser'
+        PathtoPublish: 'WMS.Frontend/dist'
         ArtifactName: 'frontend-drop'
 
 - stage: Continuous_Deployment
@@ -125,7 +125,7 @@ stages:
           - task: AzureStaticWebApp@0
             displayName: 'Deploy Front-End Client Web SPA'
             inputs:
-              app_location: '$(System.ArtifactsDirectory)/frontend-drop'
+              app_location: '$(System.ArtifactsDirectory)/frontend-drop/frontend-drop/browser'
               skip_app_build: true
               verbose: true
             env:
