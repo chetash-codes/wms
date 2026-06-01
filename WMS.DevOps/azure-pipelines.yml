@@ -129,4 +129,4 @@ stages:
               skip_app_build: true
               verbose: true
             env:
-              AZURE_STATIC_WEB_APPS_API_TOKEN: $(STATIC_WEB_APP_TOKEN_VARIABLE)
+              azure_static_web_apps_api_token: $(STATIC_WEB_APP_TOKEN_VARIABLE)
