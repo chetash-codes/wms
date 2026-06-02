@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Employee, EmployeeService } from '../services/employee';
 import { MatDialog } from '@angular/material/dialog';
 import { EmployeeForm } from '../employee-form/employee-form';
+import { AuthService } from '../../auth/services/auth';
 
 @Component({
   selector: 'app-employee-list',
@@ -12,19 +13,34 @@ import { EmployeeForm } from '../employee-form/employee-form';
 export class EmployeeList implements OnInit {
   displayedColumns: string[] = ['employeeId', 'name', 'email', 'phoneNumber', 'status', 'actions'];
   dataSource: Employee[] = [];
-  
+
   // Interactive search bindings 
   searchName: string = '';
   searchDept: number | undefined;
   searchRole: number | undefined;
 
+  // RBAC Flags
+  isAdmin: boolean = false;
+  isManager: boolean = false;
+
   constructor(
     private employeeService: EmployeeService,
+    private authService: AuthService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    // 1. Establish User Clearance
+    const userRole = this.authService.getUserRole();
+    this.isAdmin = userRole === 'Admin';
+    this.isManager = userRole === 'Manager';
+
+    // 2. Clean up UI for standard employees by removing the Actions column
+    if (!this.isAdmin && !this.isManager) {
+      this.displayedColumns = ['employeeId', 'name', 'email', 'phoneNumber', 'status'];
+    }
+
     this.loadEmployees();
   }
 

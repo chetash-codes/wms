@@ -71,18 +71,33 @@ namespace WMS.API.Controllers
             {
                 var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                // 4. Protect the Edit endpoint as well! 
-                // Managers cannot upgrade an existing employee to an Admin.
-                if (currentUserRole == "Manager" && dto.RoleId < 3)
+                // 1. Fetch the target employee BEFORE allowing any modifications
+                var targetEmployee = await _employeeService.GetEmployeeByIdAsync(id);
+                if (targetEmployee == null)
                 {
-                    return StatusCode(403, "Forbidden: You do not have clearance to assign executive roles.");
+                    return NotFound(new { message = "Employee not found." });
                 }
 
+                // 2. Strict Role Enforcement for Managers
                 if (currentUserRole == "Manager")
                 {
-                    dto.RoleId = 3; // Force safety on edits
+                    // CRITICAL FIX: Managers cannot target existing Admins (1) or other Managers (2)
+                    if (targetEmployee.RoleId < 3)
+                    {
+                        return StatusCode(403, new { message = "Forbidden: Managers cannot modify executive or peer profiles." });
+                    }
+
+                    // Prevent assigning higher roles during the edit
+                    if (dto.RoleId < 3)
+                    {
+                        return StatusCode(403, new { message = "Forbidden: You cannot elevate an employee's clearance." });
+                    }
+
+                    // Absolute safety fallback
+                    dto.RoleId = 3;
                 }
 
+                // 3. Admins bypass the above blocks and execute the update directly
                 await _employeeService.UpdateEmployeeAsync(id, dto);
                 return Ok("Employee profile updated successfully.");
             }

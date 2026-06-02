@@ -1,7 +1,7 @@
 <app-navigation-shell>
   <div class="header-action-row">
     <h2>Employee Roster Management</h2>
-    <button mat-raised-button color="primary" (click)="openAddEmployeeDialog()">
+    <button mat-raised-button color="primary" (click)="openAddEmployeeDialog()" *ngIf="isAdmin || isManager">
       <mat-icon>person_add</mat-icon> ADD NEW EMPLOYEE
     </button>
   </div>
@@ -55,7 +55,7 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="primary" (click)="openAddEmployeeDialog(element)" title="Edit Profile">
+        <button mat-icon-button color="primary" *ngIf="isAdmin || (isManager && element.roleId === 3)" (click)="openAddEmployeeDialog(element)" title="Edit Profile">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
