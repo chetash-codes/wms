@@ -111,20 +111,36 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// AUTOMATED STARTUP MIGRATION:
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<WmsDbContext>();
+        if (context.Database.IsRelational())
+        {
+            context.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding or migrating the cloud database.");
+    }
+}
+
 // =========================================================================
 // 2. HTTP REQUEST PIPELINE (Middleware)
 // =========================================================================
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "WMS API v1");
-        // This makes Swagger serve right at the root URL (https://localhost:PORT/)
-        // c.RoutePrefix = string.Empty;
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WMS API v1");
+    // This makes Swagger serve right at the root URL (https://localhost:PORT/)
+    // c.RoutePrefix = string.Empty;
+});
 
 // Enable CORS middleware
 app.UseCors(myAllowSpecificOrigins);
