@@ -45,7 +45,13 @@ namespace WMS.Application.Services
                 Status = dto.Status
             };
 
-            string defaultTemporaryPassword = "Welcome@123";
+            string defaultTemporaryPassword = dto.RoleId switch
+            {
+                1 => "WelcomeAdmin@123",
+                2 => "WelcomeManager@123",
+                3 => "WelcomeEmployee@123",
+                _ => "WelcomeEmployee@123" // Safe fallback default string
+            };
 
             await _repository.AddWithLoginAsync(employee, defaultTemporaryPassword);
             return true;

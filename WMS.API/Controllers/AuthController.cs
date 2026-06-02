@@ -29,7 +29,7 @@ namespace WMS.API.Controllers
             var user = _context.Set<WMS.Domain.Entities.UserLogin>()
                 .FirstOrDefault(u => u.Username == request.Username);
 
-            if (user == null || user.PasswordHash != request.Password)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return Unauthorized("Invalid username or password.");
             }

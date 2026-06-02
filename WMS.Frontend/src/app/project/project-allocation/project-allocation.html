@@ -1,82 +1,97 @@
 <app-navigation-shell>
-  <div class="project-header">
-    <h2>Project Management Hub</h2>
-    <p>Launch organizational development structures and allocate employee resources to active operations.</p>
+  <div *ngIf="canManageProjects; else unauthorized">
+    <div class="project-header">
+      <h2>Project Management Hub</h2>
+      <p>Launch organizational development structures and allocate employee resources to active operations.</p>
+    </div>
+
+    <mat-tab-group animationDuration="200ms">
+      <mat-tab label="Assign Staff Member">
+        <div class="tab-content-wrapper">
+          <mat-card class="form-card mat-elevation-z1">
+            <form [formGroup]="allocationForm" (ngSubmit)="onAllocate()">
+              <mat-card-content>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Select Employee</mat-label>
+                  <mat-select formControlName="empId">
+                    <mat-option *ngFor="let emp of employees" [value]="emp.employeeId">
+                      {{ emp.firstName }} {{ emp.lastName }} (ID: #{{ emp.employeeId }})
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="allocationForm.get('empId')?.hasError('required')">
+                    An employee selection is required.
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Select Destination Project</mat-label>
+                  <mat-select formControlName="projectId">
+                    <mat-option *ngFor="let proj of projects" [value]="proj.projectId">
+                      {{ proj.projectName }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="allocationForm.get('projectId')?.hasError('required')">
+                    A project selection is required.
+                  </mat-error>
+                </mat-form-field>
+
+              </mat-card-content>
+              <mat-card-actions>
+                <button mat-raised-button color="primary" type="submit" class="submit-btn"
+                  [disabled]="allocationForm.invalid">
+                  <mat-icon>assignment_ind</mat-icon> ALLOCATE EMPLOYEE TO PROJECT
+                </button>
+              </mat-card-actions>
+            </form>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Create New Project">
+        <div class="tab-content-wrapper">
+          <mat-card class="form-card mat-elevation-z1">
+            <form [formGroup]="projectForm" (ngSubmit)="onCreateProject()">
+              <mat-card-content>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Project Name</mat-label>
+                  <input matInput formControlName="projectName" placeholder="e.g., Enterprise Portal Update">
+                  <mat-error *ngIf="projectForm.get('projectName')?.hasError('required')">
+                    Project name is required.
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Initial Status</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option value="Active">Active Operational</mat-option>
+                    <mat-option value="Pipeline">Pipeline Pre-Planning</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+              </mat-card-content>
+              <mat-card-actions>
+                <button mat-raised-button color="primary" type="submit" class="submit-btn"
+                  [disabled]="projectForm.invalid">
+                  <mat-icon>add_box</mat-icon> LAUNCH CORPORATE PROJECT
+                </button>
+              </mat-card-actions>
+            </form>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
-
-  <mat-tab-group animationDuration="200ms">
-    <mat-tab label="Assign Staff Member">
-      <div class="tab-content-wrapper">
-        <mat-card class="form-card mat-elevation-z1">
-          <form [formGroup]="allocationForm" (ngSubmit)="onAllocate()">
-            <mat-card-content>
-              
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Select Employee</mat-label>
-                <mat-select formControlName="empId">
-                  <mat-option *ngFor="let emp of employees" [value]="emp.employeeId">
-                    {{ emp.firstName }} {{ emp.lastName }} (ID: #{{ emp.employeeId }})
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="allocationForm.get('empId')?.hasError('required')">
-                  An employee selection is required.
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Select Destination Project</mat-label>
-                <mat-select formControlName="projectId">
-                  <mat-option *ngFor="let proj of projects" [value]="proj.projectId">
-                    {{ proj.projectName }}
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="allocationForm.get('projectId')?.hasError('required')">
-                  A project selection is required.
-                </mat-error>
-              </mat-form-field>
-
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-raised-button color="primary" type="submit" class="submit-btn" [disabled]="allocationForm.invalid">
-                <mat-icon>assignment_ind</mat-icon> ALLOCATE EMPLOYEE TO PROJECT
-              </button>
-            </mat-card-actions>
-          </form>
-        </mat-card>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Create New Project">
-      <div class="tab-content-wrapper">
-        <mat-card class="form-card mat-elevation-z1">
-          <form [formGroup]="projectForm" (ngSubmit)="onCreateProject()">
-            <mat-card-content>
-
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Project Name</mat-label>
-                <input matInput formControlName="projectName" placeholder="e.g., Enterprise Portal Update">
-                <mat-error *ngIf="projectForm.get('projectName')?.hasError('required')">
-                  Project name is required.
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Initial Status</mat-label>
-                <mat-select formControlName="status">
-                  <mat-option value="Active">Active Operational</mat-option>
-                  <mat-option value="Pipeline">Pipeline Pre-Planning</mat-option>
-                </mat-select>
-              </mat-form-field>
-
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-raised-button color="primary" type="submit" class="submit-btn" [disabled]="projectForm.invalid">
-                <mat-icon>add_box</mat-icon> LAUNCH CORPORATE PROJECT
-              </button>
-            </mat-card-actions>
-          </form>
-        </mat-card>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
+  <ng-template #unauthorized>
+    <div class="unauthorized-state" style="text-align: center; padding: 60px 20px;">
+      <mat-icon
+        style="font-size: 64px; height: 64px; width: 64px; color: #f44336; margin-bottom: 20px;">security</mat-icon>
+      <h2 style="color: #232832; font-weight: 600;">Access Restricted</h2>
+      <p style="color: #666; max-width: 400px; margin: 0 auto;">
+        You do not possess the required administrative or managerial security clearance to configure corporate projects
+        or assign workforce allocations.
+      </p>
+    </div>
+  </ng-template>
 </app-navigation-shell>

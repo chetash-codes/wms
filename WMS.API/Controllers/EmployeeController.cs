@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WMS.Application.DTOs;
 using WMS.Application.Services;
 
@@ -37,6 +38,22 @@ namespace WMS.API.Controllers
         {
             try
             {
+                // 2. Identify who is making the request from their JWT token
+                var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // 3. Prevent Privilege Escalation: 
+                // If a Manager bypasses the frontend and tries to create an Admin (1) or Manager (2), block them.
+                if (currentUserRole == "Manager" && dto.RoleId < 3)
+                {
+                    return StatusCode(403, "Forbidden: Managers are only authorized to provision standard Employee profiles.");
+                }
+
+                // If a Manager creates an employee, strictly force the RoleId to 3 just to be safe
+                if (currentUserRole == "Manager")
+                {
+                    dto.RoleId = 3;
+                }
+
                 await _employeeService.CreateEmployeeAsync(dto);
                 return StatusCode(211, "Employee profile created successfully.");
             }
@@ -52,6 +69,20 @@ namespace WMS.API.Controllers
         {
             try
             {
+                var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // 4. Protect the Edit endpoint as well! 
+                // Managers cannot upgrade an existing employee to an Admin.
+                if (currentUserRole == "Manager" && dto.RoleId < 3)
+                {
+                    return StatusCode(403, "Forbidden: You do not have clearance to assign executive roles.");
+                }
+
+                if (currentUserRole == "Manager")
+                {
+                    dto.RoleId = 3; // Force safety on edits
+                }
+
                 await _employeeService.UpdateEmployeeAsync(id, dto);
                 return Ok("Employee profile updated successfully.");
             }

@@ -5,7 +5,7 @@
   </div>
 
   <div class="kpi-grid-container">
-    
+
     <mat-card class="kpi-card total-staff-card mat-elevation-z1">
       <mat-card-content class="kpi-content">
         <div class="icon-frame"><mat-icon>people</mat-icon></div>
@@ -39,7 +39,8 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="kpi-card pending-leaves-card mat-elevation-z1" [ngClass]="{'alert-highlight': metrics.pendingLeavesCount > 0}">
+    <mat-card class="kpi-card pending-leaves-card mat-elevation-z1"
+      [ngClass]="{'alert-highlight': metrics.pendingLeavesCount > 0}">
       <mat-card-content class="kpi-content">
         <div class="icon-frame"><mat-icon>event_busy</mat-icon></div>
         <div class="text-frame">
@@ -57,16 +58,11 @@
         <mat-card-title>Today's Operational Environment Split</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="split-bar-wrapper">
-          <div class="split-metric">
-            <span class="label"><mat-icon>business</mat-icon> Working from Office (WFO):</span>
-            <strong>{{ metrics.wfoCount }} Employees</strong>
-          </div>
-          <div class="split-metric">
-            <span class="label"><mat-icon>home</mat-icon> Remote/Hybrid Sessions (WFH):</span>
-            <strong>{{ metrics.wfhCount }} Employees</strong>
-          </div>
+
+        <div class="chart-container" style="position: relative; height: 300px; width: 100%; margin-top: 15px;">
+          <canvas id="workModeChart"></canvas>
         </div>
+
       </mat-card-content>
     </mat-card>
   </div>

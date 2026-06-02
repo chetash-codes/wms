@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProjectService, Project } from '../services/project';
 import { EmployeeService, Employee } from '../../employees/services/employee';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../auth/services/auth';
 
 @Component({
   selector: 'app-project-allocation',
@@ -16,17 +17,25 @@ export class ProjectAllocation implements OnInit {
   projects: Project[] = [];
   employees: Employee[] = [];
 
+  canManageProjects: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
     private employeeService: EmployeeService,
+    private authService: AuthService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.initForms();
-    this.loadDropdownData();
+    const userRole = this.authService.getUserRole();
+    this.canManageProjects = userRole === 'Admin' || userRole === 'Manager';
+
+    if (this.canManageProjects) {
+      this.initForms();
+      this.loadDropdownData();
+    }
   }
 
   initForms(): void {

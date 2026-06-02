@@ -11,7 +11,7 @@ export class AuthService {
 
   // 1. Initialize the stream. Check if a token already exists on app startup.
   private loggedInStatus = new BehaviorSubject<boolean>(!!localStorage.getItem('wms_auth_token'));
-  
+
   // 2. Expose this status as an Observable for guards and components to subscribe to
   isLoggedIn$ = this.loggedInStatus.asObservable();
 
@@ -22,9 +22,9 @@ export class AuthService {
       tap(response => {
         if (response && response.token) {
           localStorage.setItem('wms_auth_token', response.token);
-          
+
           // 3. CRITICAL: Broadcast to the rest of the app that login was successful!
-          this.loggedInStatus.next(true); 
+          this.loggedInStatus.next(true);
         }
       })
     );
@@ -32,13 +32,32 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('wms_auth_token');
-    
+
     // 4. Broadcast that the user has logged out
-    this.loggedInStatus.next(false); 
+    this.loggedInStatus.next(false);
   }
 
   // 5. Kept as a helper fallback, but your Guard should use isLoggedIn$ instead
   isLoggedIn(): boolean {
     return this.loggedInStatus.value;
+  }
+
+  getUserRole(): string | null {
+    const token = localStorage.getItem('wms_auth_token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // The standard JWT claim for roles is often a long URL-style string in .NET, 
+      // but if you mapped it cleanly, it might just be 'role'
+      return payload['role'] || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
+    } catch (e) {
+      console.error('Error decoding token', e);
+      return null;
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'Admin';
   }
 }

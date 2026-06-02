@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EmployeeService } from '../services/employee';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../auth/services/auth';
 
 @Component({
   selector: 'app-employee-form',
@@ -13,10 +14,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class EmployeeForm implements OnInit {
   employeeForm!: FormGroup;
   isEditMode: boolean = false;
+  isAdmin: boolean = false;
+
+  roles = [
+    { id: 1, name: 'Admin' },
+    { id: 2, name: 'Manager' },
+    { id: 3, name: 'Employee' }
+  ];
 
   constructor(
     private fb: FormBuilder,
     private employeeService: EmployeeService,
+    private authService: AuthService,
     private dialogRef: MatDialogRef<EmployeeForm>,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public editData: any
@@ -25,6 +34,7 @@ export class EmployeeForm implements OnInit {
   ngOnInit(): void {
     // Determine if data was provided to the dialog modal frame
     this.isEditMode = !!this.editData;
+    this.isAdmin = this.authService.isAdmin();
 
     this.initForm();
 
@@ -49,7 +59,7 @@ export class EmployeeForm implements OnInit {
       dob: ['', [Validators.required]],
       doj: [new Date(), [Validators.required]],
       departmentId: [1, [Validators.required]],
-      roleId: [2, [Validators.required]],
+      roleId: [{ value: 3, disabled: !this.isAdmin }, [Validators.required]],
       status: ['Active', [Validators.required]]
     });
   }
@@ -57,9 +67,11 @@ export class EmployeeForm implements OnInit {
   onSave(): void {
     if (this.employeeForm.invalid) return;
 
+    const formData = this.employeeForm.getRawValue();
+
     if (this.isEditMode) {
       // ROUTE A: Update Execution Path
-      this.employeeService.updateEmployee(this.editData.employeeId, this.employeeForm.value).subscribe({
+      this.employeeService.updateEmployee(this.editData.employeeId, formData).subscribe({
         next: (successMsg) => {
           this.snackBar.open(successMsg, 'Close', { duration: 3000 });
           this.dialogRef.close('saved');
@@ -68,7 +80,7 @@ export class EmployeeForm implements OnInit {
       });
     } else {
       // ROUTE B: Create Execution Path
-      this.employeeService.createEmployee(this.employeeForm.value).subscribe({
+      this.employeeService.createEmployee(formData).subscribe({
         next: (successMsg) => {
           this.snackBar.open(successMsg, 'Close', { duration: 3000 });
           this.dialogRef.close('saved');

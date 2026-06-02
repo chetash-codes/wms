@@ -1,5 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DashboardMetrics, DashboardService } from '../services/dashboard';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard-home',
@@ -17,15 +20,22 @@ export class DashboardHome implements OnInit {
     wfhCount: 0,
     totalProjects: 0
   };
-  
+
   loading: boolean = true;
   userName: string = 'User';
+  private chartInstance: any;
 
-  constructor(private dashboardService: DashboardService, private cdr: ChangeDetectorRef) {}
+  constructor(private dashboardService: DashboardService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.extractUserName();
     this.loadMetrics();
+  }
+
+  ngOnDestroy(): void {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
   }
 
   extractUserName(): void {
@@ -47,10 +57,50 @@ export class DashboardHome implements OnInit {
         this.metrics = data;
         this.loading = false;
         this.cdr.detectChanges(); // Repaint analytical cards grid elements immediately
+        this.renderDistributionChart();
       },
       error: (err) => {
         console.error('Failed to stream aggregate dashboard summary metrics:', err);
         this.loading = false;
+      }
+    });
+  }
+
+  renderDistributionChart(): void {
+    const canvas = document.getElementById('workModeChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    if (this.chartInstance) {
+      this.chartInstance.destroy(); // Clear old chart on re-renders
+    }
+
+    this.chartInstance = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Work From Office (WFO)', 'Remote / Hybrid (WFH)'],
+        datasets: [{
+          data: [this.metrics.wfoCount, this.metrics.wfhCount],
+          backgroundColor: [
+            '#3f51b5', // Material Primary Blue
+            '#ff4081'  // Material Accent Pink
+          ],
+          borderWidth: 2,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              font: { family: 'system-ui, -apple-system, sans-serif', size: 14 }
+            }
+          }
+        }
       }
     });
   }
