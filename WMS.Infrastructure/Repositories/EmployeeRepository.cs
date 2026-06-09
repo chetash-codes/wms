@@ -87,6 +87,18 @@ namespace WMS.Infrastructure.Repositories
         public async Task UpdateAsync(Employee employee)
         {
             _context.Employees.Update(employee);
+
+            // Fetch the associated Login record
+            var existingLogin = await _context.Set<UserLogin>().FirstOrDefaultAsync(u => u.EmployeeId == employee.EmployeeId);
+
+            if (existingLogin != null)
+            {
+                existingLogin.Username = employee.Email;
+                existingLogin.RoleId = employee.RoleId;
+
+                _context.Set<UserLogin>().Update(existingLogin);
+            }
+
             await _context.SaveChangesAsync();
         }
 

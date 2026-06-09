@@ -1,11 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WMS.Application.Interfaces;
 using WMS.Domain.Entities;
 
 namespace WMS.Infrastructure.Data
 {
     public class WmsDbContext : DbContext
     {
-        public WmsDbContext(DbContextOptions<WmsDbContext> options) : base(options) { }
+        private readonly ICurrentUserService _currentUserService;
+        public WmsDbContext(DbContextOptions<WmsDbContext> options, ICurrentUserService currentUserService) : base(options) {
+            _currentUserService = currentUserService;
+        }
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -73,7 +77,7 @@ namespace WMS.Infrastructure.Data
                     EntityName = entry.Entity.GetType().Name,
                     Action = entry.State.ToString(), // Insert, Update, or Delete
                     CreatedOn = DateTime.UtcNow,
-                    CreatedBy = 1 // Placeholder: In production, parse via an ICurrentUserService provider
+                    CreatedBy = _currentUserService.UserId ?? 1 // Placeholder: In production, parse via an ICurrentUserService provider
                 };
 
                 // Track the record primary identity key post-save if available

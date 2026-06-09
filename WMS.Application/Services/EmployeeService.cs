@@ -59,8 +59,12 @@ namespace WMS.Application.Services
 
         public async Task UpdateEmployeeAsync(int id, EmployeeDto dto)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) throw new KeyNotFoundException("Employee not found");
+            var existing = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException("Employee not found");
+
+            if (dto.DOB > DateTime.Today.AddYears(-18))
+            {
+                throw new ArgumentException("Employee must be at least 18 years old.");
+            }
 
             existing.FirstName = dto.FirstName;
             existing.LastName = dto.LastName;

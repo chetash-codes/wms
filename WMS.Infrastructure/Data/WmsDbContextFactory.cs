@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using WMS.Application.Interfaces;
 
 namespace WMS.Infrastructure.Data;
 
@@ -12,6 +13,14 @@ public class WmsDbContextFactory : IDesignTimeDbContextFactory<WmsDbContext>
         // This connection string is ONLY used by the migration tool at design time
         optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=WmsDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
-        return new WmsDbContext(optionsBuilder.Options);
+        var designTimeUserService = new DesignTimeCurrentUserService();
+
+        return new WmsDbContext(optionsBuilder.Options, designTimeUserService);
     }
+}
+
+public class DesignTimeCurrentUserService : ICurrentUserService
+{
+    public int? UserId => null;
+    public string? Role => "Employee";
 }

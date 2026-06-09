@@ -6,6 +6,7 @@ using System.Text;
 using WMS.Application.Interfaces;
 using WMS.Application.Services;
 using WMS.Infrastructure.Data;
+using WMS.Infrastructure.Identity;
 using WMS.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 // Configure DbContext to target SQL Server
 builder.Services.AddDbContext<WmsDbContext>(options =>
@@ -45,6 +47,7 @@ builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 
 // Register Services

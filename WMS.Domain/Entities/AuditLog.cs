@@ -20,7 +20,7 @@ namespace WMS.Domain.Entities
         public string Action { get; set; } = string.Empty;
 
         [Required]
-        public int CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
 
         [ForeignKey("CreatedBy")]
         public Employee? User { get; set; }
