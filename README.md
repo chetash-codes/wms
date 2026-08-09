@@ -31,8 +31,7 @@ The solution folder structure follows a decoupled architecture pattern:
   ├── /WMS.Application    # Core Business Services, DTOs, and Interfaces
   ├── /WMS.Domain         # System Entities and Repository Contracts
   ├── /WMS.Infrastructure # Entity Framework Core Context & SQL Repositories
-  ├── /WMS.Frontend       # Angular Feature Modules & Client Application
-  └── /WMS.Tests          # Core xUnit Testing Engine Projectome@123
+  └── /WMS.Frontend       # Angular Feature Modules & Client Application
 ```
 
 ---
