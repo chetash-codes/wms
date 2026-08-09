@@ -53,7 +53,7 @@ namespace WMS.API.Controllers
             var token = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddMinutes(20),
                 Issuer = jwtSettings.GetValue<string>("Issuer"),
                 Audience = jwtSettings.GetValue<string>("Audience"),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
